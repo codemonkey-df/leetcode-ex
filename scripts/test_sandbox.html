@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sandbox Test</title>
+</head>
+<body>
+    <h1>Testing Python Sandbox</h1>
+    <button onclick="testSandbox()">Test Sandbox</button>
+    <pre id="output"></pre>
+
+    <script type="module">
+        // Simulate the sandbox request
+        window.testSandbox = async function() {
+            const output = document.getElementById('output');
+            
+            try {
+                // Initialize
+                const initResp = await fetch('/api/sandbox/init', {
+                    method: 'POST',
+                    headers: { 'X-Session-Id': 'test123' }
+                });
+                const initData = await initResp.json();
+                output.textContent = `Initialized: ${JSON.stringify(initData, null, 2)}\n`;
+                
+                // Test code
+                const testCode = `def maxArea(height):
+    left = 0
+    right = len(height) - 1
+    max_area = 0
+    while left < right:
+        width = right - left
+        height_min = min(height[left], height[right])
+        area = width * height_min
+        max_area = max(max_area, area)
+        if height[left] < height[right]:
+            left += 1
+        else:
+            right -= 1
+    return max_area`;
+                
+                const testCases = [
+                    { input: "[1,8,6,2,5,4,8,3,7]", output: "49" },
+                    { input: "[1,1]", output: "1" }
+                ];
+                
+                const execResp = await fetch('/api/sandbox/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Session-Id': 'test123' },
+                    body: JSON.stringify({ code: testCode, testCases })
+                });
+                const execData = await execResp.json();
+                output.textContent += `\nExecution Result: ${JSON.stringify(execData, null, 2)}`;
+                
+            } catch (error) {
+                output.textContent += `\nError: ${error.message}`;
+            }
+        }
+    </script>
+    
+    <script>
+        // Re-export for onclick handler
+        import('./test_sandbox.html').catch(() => {});
+    </script>
+</body>
+</html>
