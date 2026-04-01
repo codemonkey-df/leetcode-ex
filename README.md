@@ -1,5 +1,7 @@
 # LeetCode Patterns Tutor
 
+![Extract Data](docs/logo.png)
+
 A comprehensive platform for learning algorithmic patterns through interactive coding exercises.
 
 ## Features
